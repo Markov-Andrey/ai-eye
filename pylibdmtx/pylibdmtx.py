@@ -247,7 +247,7 @@ def _pixel_data(image):
     return pixels, width, height, bpp
 
 
-def decode(image, timeout=None, gap_size=None, shrink=1, shape=None,
+def decode(image, timeout=400, gap_size=None, shrink=1, shape=None,
            deviation=None, threshold=None, min_edge=None, max_edge=None,
            corrections=None, max_count=1, return_vertices=False):
     """Decodes datamatrix barcodes in `image`.
