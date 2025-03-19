@@ -76,10 +76,8 @@ def sharpen_image(image):
 def binary_threshold(image, threshold_value=128):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Применяем пороговое значение для бинаризации
     _, binary_image = cv2.threshold(gray, threshold_value, 255, cv2.THRESH_BINARY)
 
-    # Применение морфологической операции закрытия (для улучшения углов)
     kernel = np.ones((3, 3), np.uint8)
     binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
 
