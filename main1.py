@@ -75,7 +75,14 @@ def sharpen_image(image):
 
 def binary_threshold(image, threshold_value=128):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Применяем пороговое значение для бинаризации
     _, binary_image = cv2.threshold(gray, threshold_value, 255, cv2.THRESH_BINARY)
+
+    # Применение морфологической операции закрытия (для улучшения углов)
+    kernel = np.ones((3, 3), np.uint8)
+    binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
+
     return binary_image
 
 
@@ -90,21 +97,15 @@ def extract_detected_objects(image, valid_rects, areas):
         if (mean_area - 1.5 * std_dev) < area < (mean_area + 1.5 * std_dev):
             M = cv2.getRotationMatrix2D((x, y), angle, 1.0)
             rotated = cv2.warpAffine(image, M, (image.shape[1], image.shape[0]))
-
             x1, y1 = int(x - w / 2), int(y - h / 2)
             x2, y2 = int(x + w / 2), int(y + h / 2)
             cropped = rotated[y1:y2, x1:x2]
-
             binary_image = binary_threshold(cropped)
             sharpened_image = sharpen_image(binary_image)
-
             pil_image = Image.fromarray(cv2.cvtColor(sharpened_image, cv2.COLOR_BGR2RGB))
-
             enhancer = ImageEnhance.Contrast(pil_image)
             pil_image = enhancer.enhance(1.5)
-
             pil_image = pil_image.filter(ImageFilter.SHARPEN)
-
             processed_image = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
 
             cropped_image_path = os.path.join('detected', f'crop_{idx}.png')
