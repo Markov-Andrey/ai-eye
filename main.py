@@ -1,11 +1,12 @@
 import cv2
 import numpy as np
 import time
-from pylibdmtx.pylibdmtx import decode
+from pylibdmtx import pylibdmtx
 from concurrent.futures import ThreadPoolExecutor
 from PIL import Image, ImageEnhance, ImageFilter
 import os
 
+decode = pylibdmtx.decode
 
 def load_image(image_path):
     image = cv2.imread(image_path)
