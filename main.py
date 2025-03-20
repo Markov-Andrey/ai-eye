@@ -46,7 +46,7 @@ def draw_contours(image, valid_rects):
     return output_image
 
 
-def extract_detected_objects(image, valid_rects, areas, output_path):
+def extract_detected_objects(image, valid_rects, areas):
     mean_area = np.mean(areas)
     std_dev = np.std(areas)
 
@@ -85,7 +85,7 @@ def process_image(image_path):
     save_image(output_image, output_path)
 
     if areas:
-        extract_detected_objects(image, valid_rects, areas, output_path)
+        extract_detected_objects(image, valid_rects, areas)
 
 
 def process_images_from_detected():
