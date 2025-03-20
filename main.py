@@ -21,11 +21,6 @@ def save_image(image, path):
     cv2.imwrite(path, image)
 
 
-def find_contours(edges):
-    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    return contours
-
-
 def filter_rectangles(contours):
     valid_rects = []
     areas = []
@@ -83,7 +78,7 @@ def process_image(image_path):
     edges = preprocess_image(image)
     edges_path = f'tmp/edges_{timestamp}.jpg'
     save_image(edges, edges_path)
-    contours = find_contours(edges)
+    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     valid_rects, areas = filter_rectangles(contours)
     output_path = f'tmp/detected_{timestamp}.jpg'
     output_image = draw_contours(image, valid_rects)
