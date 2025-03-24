@@ -1,5 +1,6 @@
 import os
 import time
+import cv2
 
 
 def clear_or_create():
@@ -19,3 +20,8 @@ def timer(start_time):
     minutes, seconds = divmod(int(elapsed_time // 1000), 60)
     milliseconds = int(elapsed_time % 1000)
     print(f"Обработка завершена за {minutes} мин {seconds} сек {milliseconds} мс")
+
+
+def save_image(image, path):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    cv2.imwrite(path, image)
