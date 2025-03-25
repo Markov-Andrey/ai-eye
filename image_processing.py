@@ -44,22 +44,30 @@ def extract_detected_objects(image, valid_rects, areas):
     for idx, (rect, cnt) in enumerate(valid_rects):
         (x, y), (w, h), angle = rect
         area = w * h
-
         if (mean_area - 1.5 * std_dev) < area < (mean_area + 1.5 * std_dev):
             M = cv2.getRotationMatrix2D((x, y), angle, 1.0)
             rotated = cv2.warpAffine(image, M, (image.shape[1], image.shape[0]))
-            x1, y1 = max(0, int(x - w / 2)), max(0, int(y - h / 2))
-            x2, y2 = min(image.shape[1], int(x + w / 2)), min(image.shape[0], int(y + h / 2))
+
+            padding = 15
+            x1, y1 = max(0, int(x - w / 2) - padding), max(0, int(y - h / 2) - padding)
+            x2, y2 = min(image.shape[1], int(x + w / 2) + padding), min(image.shape[0], int(y + h / 2) + padding)
 
             cropped = rotated[y1:y2, x1:x2]
-
             if cropped is None or cropped.size == 0:
                 continue
 
-            timestamp = int(time.time() * 1000)
-            cropped_image_path = os.path.join('detected', f'crop_{timestamp}.png')
+            cropped_gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
+            negative = cv2.bitwise_not(cropped_gray)
+            contrast = cv2.convertScaleAbs(negative, alpha=1.5, beta=0)
 
-            save_image(cropped, cropped_image_path)
+            kernel = np.array([[0, -1, 0],
+                               [-1, 5, -1],
+                               [0, -1, 0]])
+            sharpened = cv2.filter2D(contrast, -1, kernel)
+
+            timestamp = int(time.time() * 1000)
+            cropped_image_path = os.path.join('detected', f'crop_{timestamp}.jpg')
+            save_image(sharpened, cropped_image_path)
 
 
 def process_image(image_path):

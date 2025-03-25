@@ -49,20 +49,21 @@ def find_matrix(img_path):
 def decode_matrix():
     detected_dir = "detected"
     all_unique_values = set()
-
     image_paths = [os.path.join(detected_dir, f) for f in os.listdir(detected_dir) if
                    f.endswith(('.png', '.jpg', '.jpeg'))]
-
     image_paths = sorted(image_paths, key=lambda x: int(os.path.splitext(os.path.basename(x))[0].split('_')[1]))
-
     with ThreadPoolExecutor() as executor:
         decoded_results = list(executor.map(find_matrix, image_paths))
-
     all_unique_values.update([data[0] for data in decoded_results if data])
-
+    os.makedirs("processed", exist_ok=True)
     if all_unique_values:
-        os.makedirs("processed", exist_ok=True)
         with open("processed/results2.txt", "w") as file:
             file.write('\n'.join(sorted(all_unique_values)))
+    with open("processed/results3.txt", "w") as file:
+        for image_path, result in zip(image_paths, decoded_results):
+            if result:
+                file.write(f"{os.path.basename(image_path)} - {result[0]}\n")
+            else:
+                file.write(f"{os.path.basename(image_path)} - false\n")
 
     return all_unique_values
